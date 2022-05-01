@@ -14,6 +14,7 @@ import (
 )
 
 type bunRouter struct {
+	handler     http.Handler
 	middlewares []interface{}
 	router      *bunrouter.CompatRouter
 	routeMap    map[string]mojito.Handler
@@ -60,6 +61,34 @@ func (r *bunRouter) PATCH(path string, handler interface{}) error {
 }
 
 //// Generic functions for adding routes and middleware
+
+// WithDefaultHandler will set the default handler for the router
+func (r *bunRouter) WithDefaultHandler(handler interface{}) error {
+	return r.WithRoute("/*path", http.MethodGet, handler)
+}
+
+// WithErrorHandler will set the error handler for the router
+func (r *bunRouter) WithErrorHandler(handler interface{}) error {
+	r.Lock()
+	defer r.Unlock()
+	h, err := routing.NewHandler(handler)
+	if err != nil {
+		return err
+	}
+
+	errorHandler := func(w http.ResponseWriter, req *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				req := routing.NewRequest(req)
+				res := routing.NewResponse(w)
+				h.Serve(req, res)
+			}
+		}()
+		r.router.ServeHTTP(w, req)
+	}
+	r.handler = http.HandlerFunc(errorHandler)
+	return nil
+}
 
 // WithGroup will create a new route group for the given prefix
 func (r *bunRouter) WithGroup(path string, callback func(group mojito.RouteGroup)) error {
@@ -166,6 +195,7 @@ func (r *bunRouter) withMojitoHandler(handler mojito.Handler) http.HandlerFunc {
 func newBunRouter() mojito.Router {
 	router := bunrouter.New().Compat()
 	return &bunRouter{
+		handler:  router,
 		router:   router,
 		routeMap: make(map[string]mojito.Handler),
 		Mutex:    sync.Mutex{},

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"reflect"
+	"runtime/debug"
 	"sync"
 
 	"github.com/infinytum/go-mojito"
@@ -165,7 +166,7 @@ func (r *bunRouter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	defer func() {
 		if err := recover(); err != nil {
 			if r.errorHandler == nil {
-				log.Error(err)
+				log.Errorf("%s: %s", err, string(debug.Stack()))
 			} else {
 				req := routing.NewRequest(req)
 				res := routing.NewResponse(w)
@@ -207,7 +208,7 @@ func (r *bunRouter) withMojitoHandler(handler mojito.Handler) http.HandlerFunc {
 		res := routing.NewResponse(w)
 		req.SetParams(bunrouter.ParamsFromContext(r.Context()).Map())
 		if err := handler.Serve(req, res); err != nil {
-			log.Field("router", "bun").Error(err)
+			panic(err)
 		}
 	}
 }

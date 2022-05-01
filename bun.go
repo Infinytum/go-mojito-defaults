@@ -64,7 +64,7 @@ func (r *bunRouter) PATCH(path string, handler interface{}) error {
 
 // WithDefaultHandler will set the default handler for the router
 func (r *bunRouter) WithDefaultHandler(handler interface{}) error {
-	return r.WithRoute("/*path", http.MethodGet, handler)
+	return r.WithRoute(http.MethodGet, "/*path", handler)
 }
 
 // WithErrorHandler will set the error handler for the router

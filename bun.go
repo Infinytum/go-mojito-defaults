@@ -173,25 +173,16 @@ func (r *bunRouter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			}
 		}
 	}()
-	fakeRes := NewFakeResponse()
-	fakeRes.Headers = w.Header()
-	r.router.ServeHTTP(fakeRes, req)
-	if fakeRes.Status != 404 || r.defaultHandler == nil {
-		w.Write(fakeRes.Body)
+	r.router.ServeHTTP(w, req)
+}
+
+func (r *bunRouter) ServeNotFound(w http.ResponseWriter, re *http.Request) {
+	if r.defaultHandler == nil {
 		return
 	}
-
-	fakeRes2 := NewFakeResponse()
-	fakeRes2.Headers = w.Header()
-	request := routing.NewRequest(req)
-	res := routing.NewResponse(fakeRes2)
-	r.defaultHandler.Serve(request, res)
-	l := 512
-	if len(fakeRes2.Body) < 512 {
-		l = len(fakeRes2.Body)
-	}
-	w.Header().Set("Content-Type", http.DetectContentType(fakeRes2.Body[:l]))
-	w.Write(fakeRes2.Body)
+	req := routing.NewRequest(re)
+	res := routing.NewResponse(w)
+	r.defaultHandler.Serve(req, res)
 }
 
 // ListenAndServe will start an HTTP webserver on the given address
@@ -223,10 +214,10 @@ func (r *bunRouter) withMojitoHandler(handler mojito.Handler) http.HandlerFunc {
 
 // NewBunRouter will create new instance of the mojito bun router implementation
 func newBunRouter() mojito.Router {
-	router := bunrouter.New().Compat()
-	return &bunRouter{
-		router:   router,
+	bunRouter := &bunRouter{
 		routeMap: make(map[string]mojito.Handler),
 		Mutex:    sync.Mutex{},
 	}
+	bunRouter.router = bunrouter.New(bunrouter.WithNotFoundHandler(bunrouter.HTTPHandlerFunc(bunRouter.ServeNotFound))).Compat()
+	return bunRouter
 }

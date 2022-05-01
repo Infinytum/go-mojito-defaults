@@ -3,7 +3,7 @@ module github.com/infinytum/go-mojito-defaults
 go 1.18
 
 require (
-	github.com/infinytum/go-mojito v1.3.5-0.20220430222052-ae9bb52fda99
+	github.com/infinytum/go-mojito v1.3.5-0.20220430232706-40fc69f71a02
 	github.com/uptrace/bunrouter v1.0.14
 )
 

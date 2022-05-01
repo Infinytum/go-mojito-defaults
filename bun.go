@@ -23,6 +23,10 @@ type bunRouter struct {
 
 //// Convenience functions for registering routes
 
+func (r *bunRouter) CONNECT(path string, handler interface{}) error {
+	return r.WithRoute(http.MethodConnect, path, handler)
+}
+
 func (r *bunRouter) DELETE(path string, handler interface{}) error {
 	return r.WithRoute(http.MethodDelete, path, handler)
 }
@@ -41,6 +45,18 @@ func (r *bunRouter) POST(path string, handler interface{}) error {
 
 func (r *bunRouter) PUT(path string, handler interface{}) error {
 	return r.WithRoute(http.MethodPut, path, handler)
+}
+
+func (r *bunRouter) TRACE(path string, handler interface{}) error {
+	return r.WithRoute(http.MethodTrace, path, handler)
+}
+
+func (r *bunRouter) OPTIONS(path string, handler interface{}) error {
+	return r.WithRoute(http.MethodOptions, path, handler)
+}
+
+func (r *bunRouter) PATCH(path string, handler interface{}) error {
+	return r.WithRoute(http.MethodPatch, path, handler)
 }
 
 //// Generic functions for adding routes and middleware

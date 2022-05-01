@@ -7,6 +7,8 @@ github.com/infinytum/go-mojito v1.3.5-0.20220430214325-9100cbd845e0 h1:4xEP/mgT6
 github.com/infinytum/go-mojito v1.3.5-0.20220430214325-9100cbd845e0/go.mod h1:jmojUcDR4mGCo4jDYMHVKHRA9NOR0Qh8LKNVCFiFykw=
 github.com/infinytum/go-mojito v1.3.5-0.20220430222052-ae9bb52fda99 h1:kOzgS0z/cHbWpeB+9D+p0xraEb+Y/RVWb2KkTeH3r1E=
 github.com/infinytum/go-mojito v1.3.5-0.20220430222052-ae9bb52fda99/go.mod h1:ywys1EqNxYIdsQtwwxtPAcswC2iX2AosfsPJkX4BTOw=
+github.com/infinytum/go-mojito v1.3.5-0.20220430232706-40fc69f71a02 h1:vl7hbnpXXODKZVbK6B+ILI2sAR7WylB62xst05aAalc=
+github.com/infinytum/go-mojito v1.3.5-0.20220430232706-40fc69f71a02/go.mod h1:ywys1EqNxYIdsQtwwxtPAcswC2iX2AosfsPJkX4BTOw=
 github.com/infinytum/raymond/v2 v2.0.5 h1:sdbPMfhNnNI9c5gxDPfbgoFYlwTgg4UlSjxqvYnSodY=
 github.com/infinytum/raymond/v2 v2.0.5/go.mod h1:XWq3aImVLUPbCm+hFxmqjIMaBm10z+WjtxLtR0P8oVs=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

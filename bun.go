@@ -164,14 +164,15 @@ func (r *bunRouter) WithRoute(method string, path string, handler interface{}) e
 
 func (r *bunRouter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	defer func() {
-		err := recover()
-		if r.errorHandler == nil {
-			log.Errorf("%s: %s", err, string(debug.Stack()))
-		} else {
-			req := routing.NewRequest(req)
-			res := routing.NewResponse(w)
-			res.ViewBag().Set("error", err)
-			r.errorHandler.Serve(req, res)
+		if err := recover(); err != nil {
+			if r.errorHandler == nil {
+				log.Errorf("%s: %s", err, string(debug.Stack()))
+			} else {
+				req := routing.NewRequest(req)
+				res := routing.NewResponse(w)
+				res.ViewBag().Set("error", err)
+				r.errorHandler.Serve(req, res)
+			}
 		}
 	}()
 	r.router.ServeHTTP(w, req)

@@ -14,10 +14,11 @@ import (
 )
 
 type bunRouter struct {
-	handler     http.Handler
-	middlewares []interface{}
-	router      *bunrouter.CompatRouter
-	routeMap    map[string]mojito.Handler
+	defaultHandler mojito.Handler
+	errorHandler   mojito.Handler
+	middlewares    []interface{}
+	router         *bunrouter.CompatRouter
+	routeMap       map[string]mojito.Handler
 	sync.Mutex
 	http.Server
 }
@@ -64,7 +65,14 @@ func (r *bunRouter) PATCH(path string, handler interface{}) error {
 
 // WithDefaultHandler will set the default handler for the router
 func (r *bunRouter) WithDefaultHandler(handler interface{}) error {
-	return r.WithRoute(http.MethodGet, "/*path", handler)
+	r.Lock()
+	defer r.Unlock()
+	h, err := routing.NewHandler(handler)
+	if err != nil {
+		return err
+	}
+	r.defaultHandler = h
+	return nil
 }
 
 // WithErrorHandler will set the error handler for the router
@@ -75,18 +83,7 @@ func (r *bunRouter) WithErrorHandler(handler interface{}) error {
 	if err != nil {
 		return err
 	}
-
-	errorHandler := func(w http.ResponseWriter, req *http.Request) {
-		defer func() {
-			if err := recover(); err != nil {
-				req := routing.NewRequest(req)
-				res := routing.NewResponse(w)
-				h.Serve(req, res)
-			}
-		}()
-		r.router.ServeHTTP(w, req)
-	}
-	r.handler = http.HandlerFunc(errorHandler)
+	r.errorHandler = h
 	return nil
 }
 
@@ -164,11 +161,35 @@ func (r *bunRouter) WithRoute(method string, path string, handler interface{}) e
 	return nil
 }
 
+func (r *bunRouter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	defer func() {
+		if err := recover(); err != nil {
+			if r.errorHandler == nil {
+				log.Error(err)
+			} else {
+				req := routing.NewRequest(req)
+				res := routing.NewResponse(w)
+				r.errorHandler.Serve(req, res)
+			}
+		}
+	}()
+	fakeRes := NewFakeResponse()
+	fakeRes.Headers = w.Header()
+	r.router.ServeHTTP(fakeRes, req)
+	if fakeRes.Status != 404 || r.defaultHandler == nil {
+		w.Write(fakeRes.Body)
+		return
+	}
+	request := routing.NewRequest(req)
+	res := routing.NewResponse(w)
+	r.defaultHandler.Serve(request, res)
+}
+
 // ListenAndServe will start an HTTP webserver on the given address
 func (r *bunRouter) ListenAndServe(address string) error {
 	r.Server = http.Server{
 		Addr:    address,
-		Handler: r.router,
+		Handler: http.HandlerFunc(r.ServeHTTP),
 	}
 	return r.Server.ListenAndServe()
 }
@@ -195,7 +216,6 @@ func (r *bunRouter) withMojitoHandler(handler mojito.Handler) http.HandlerFunc {
 func newBunRouter() mojito.Router {
 	router := bunrouter.New().Compat()
 	return &bunRouter{
-		handler:  router,
 		router:   router,
 		routeMap: make(map[string]mojito.Handler),
 		Mutex:    sync.Mutex{},

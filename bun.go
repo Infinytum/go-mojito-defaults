@@ -191,6 +191,7 @@ func (r *bunRouter) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		l = len(fakeRes2.Body)
 	}
 	w.Header().Set("Content-Type", http.DetectContentType(fakeRes2.Body[:l]))
+	w.Write(fakeRes2.Body)
 }
 
 // ListenAndServe will start an HTTP webserver on the given address

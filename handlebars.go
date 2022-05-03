@@ -37,7 +37,7 @@ func (r *handlebarsRenderer) Render(view string, bag renderer.ViewBag) (string, 
 		log.Error(err)
 		return fmt.Sprintf(raymondViewTemplateNotFound, view), err
 	}
-	return tpl.Exec(bag)
+	return tpl.Exec(bag.ToMap())
 }
 
 // newHandlebarsRenderer will return a new instance of the mojito handlebars renderer implementation
@@ -52,18 +52,13 @@ func helperExtends(view string, options *raymond.Options) raymond.SafeString {
 		log.Error(err)
 		return raymond.SafeString(fmt.Sprintf(raymondViewTemplateNotFound, view))
 	}
-	data, err := json.Marshal(options.Ctx())
-	if err != nil {
-		log.Error(err)
+
+	bag, ok := options.Ctx().(map[interface{}]interface{})
+	if !ok {
 		return raymond.SafeString("Unable to encode context")
 	}
-	newBag := structures.NewMap[string, interface{}]()
-	if err := json.Unmarshal(data, &newBag); err != nil {
-		log.Error(err)
-		return raymond.SafeString("Unable to decode context")
-	}
-	newBag.Set("subview", options.FnWith(options.Ctx()))
-	return raymond.SafeString(tpl.MustExec(newBag))
+	bag["subview"] = options.FnWith(options.Ctx())
+	return raymond.SafeString(tpl.MustExec(bag))
 }
 
 // helperWhen provides a shorthand if inside expression blocks

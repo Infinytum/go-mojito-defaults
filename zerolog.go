@@ -6,13 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/infinytum/go-mojito"
-	"github.com/infinytum/go-mojito/util"
+	"github.com/infinytum/go-mojito/mojito/logger"
 	"github.com/rs/zerolog"
 )
 
 type zerologLogger struct {
-	fields util.LogFields
+	fields logger.Fields
 	logger zerolog.Logger
 }
 
@@ -50,12 +49,12 @@ func (z *zerologLogger) Fatalf(msg string, values ...interface{}) {
 }
 
 // Field will add a field to a new logger and return it
-func (z *zerologLogger) Field(name string, val interface{}) mojito.Logger {
-	return z.Fields(util.LogFields{name: val})
+func (z *zerologLogger) Field(name string, val interface{}) logger.Logger {
+	return z.Fields(logger.Fields{name: val})
 }
 
 // Fields will add multiple fields to a new logger and return it
-func (z *zerologLogger) Fields(fields util.LogFields) mojito.Logger {
+func (z *zerologLogger) Fields(fields logger.Fields) logger.Logger {
 	newLog := &zerologLogger{
 		fields: z.fields.Clone(),
 		logger: z.logger.With().Logger(),
@@ -107,7 +106,7 @@ func (z *zerologLogger) log(msg interface{}, event *zerolog.Event) {
 }
 
 // newZerologLogger will create a new instance of the mojito zerolog implementation
-func newZerologLogger() mojito.Logger {
+func newZerologLogger() *zerologLogger {
 	output := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 	output.FormatLevel = func(i interface{}) string {
 		return strings.ToUpper(fmt.Sprintf("| %-6s|", i))
@@ -127,7 +126,7 @@ func newZerologLogger() mojito.Logger {
 
 	log := zerolog.New(output).With().Timestamp().Logger()
 	return &zerologLogger{
-		fields: make(util.LogFields),
+		fields: make(logger.Fields),
 		logger: log,
 	}
 }

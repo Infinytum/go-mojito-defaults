@@ -3,9 +3,9 @@ package defaults
 import "github.com/infinytum/go-mojito"
 
 func init() {
-	mojito.Register(func() mojito.Router {
+	/*mojito.Register(func() mojito.Router {
 		return newBunRouter()
-	}, true)
+	}, true)*/
 
 	_ = mojito.Register(func() mojito.Renderer {
 		return newHandlebarsRenderer()

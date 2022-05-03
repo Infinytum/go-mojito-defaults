@@ -1,6 +1,6 @@
 package defaults
 
-import (
+/*import (
 	"context"
 	"errors"
 	"net/http"
@@ -222,4 +222,4 @@ func newBunRouter() mojito.Router {
 	}
 	bunRouter.router = bunrouter.New(bunrouter.WithNotFoundHandler(bunrouter.HTTPHandlerFunc(bunRouter.ServeNotFound))).Compat()
 	return bunRouter
-}
+}*/

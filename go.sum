@@ -5,6 +5,8 @@ github.com/golobby/container/v3 v3.2.1 h1:waIB8d4nSDwMaO7PvM6H+OCqAFEWyMuSPNN4Fw
 github.com/golobby/container/v3 v3.2.1/go.mod h1:RDdKpnKpV1Of11PFBe7Dxc2C1k2KaLE4FD47FflAmj0=
 github.com/infinytum/go-mojito v1.3.5-0.20220501184931-442894b73659 h1:eEUgRMfJBpnQ/aOdF99WVVEb8RheH2f7988AxUlTTak=
 github.com/infinytum/go-mojito v1.3.5-0.20220501184931-442894b73659/go.mod h1:SifljnigJqlDE6gUgArVT0XI3RabJgKB+NZ6d12xH/I=
+github.com/infinytum/go-mojito v1.3.5-0.20220503224101-c037fddc904e h1:bVVU0kh4HsP3gXi+5zUPKp5nHHVTjowLN3k63v/BtnI=
+github.com/infinytum/go-mojito v1.3.5-0.20220503224101-c037fddc904e/go.mod h1:I2f7QkDOGJ2EfLzD5LLykJCSwIPawuiBFw+SwFQzyZ0=
 github.com/infinytum/raymond/v2 v2.0.5 h1:sdbPMfhNnNI9c5gxDPfbgoFYlwTgg4UlSjxqvYnSodY=
 github.com/infinytum/raymond/v2 v2.0.5/go.mod h1:XWq3aImVLUPbCm+hFxmqjIMaBm10z+WjtxLtR0P8oVs=
 github.com/mitchellh/hashstructure/v2 v2.0.2 h1:vGKWl0YJqUNxE8d+h8f6NJLcCJrgbhC4NcD46KavDd4=

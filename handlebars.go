@@ -9,7 +9,8 @@ import (
 
 	"github.com/infinytum/go-mojito"
 	"github.com/infinytum/go-mojito/log"
-	"github.com/infinytum/go-mojito/util"
+	"github.com/infinytum/go-mojito/mojito/renderer"
+	"github.com/infinytum/go-mojito/pkg/structures"
 	"github.com/infinytum/raymond/v2"
 )
 
@@ -30,7 +31,7 @@ type handlebarsRenderer struct{}
 
 // Render will load a template file and render the template
 // within using the viewbag as a context
-func (r *handlebarsRenderer) Render(view string, bag util.ViewBag) (string, error) {
+func (r *handlebarsRenderer) Render(view string, bag renderer.ViewBag) (string, error) {
 	tpl, err := raymond.ParseFile(normalizeViewPath(view))
 	if err != nil {
 		log.Error(err)
@@ -56,7 +57,7 @@ func helperExtends(view string, options *raymond.Options) raymond.SafeString {
 		log.Error(err)
 		return raymond.SafeString("Unable to encode context")
 	}
-	newBag := util.ViewBag{}
+	newBag := structures.NewMap[string, interface{}]()
 	if err := json.Unmarshal(data, &newBag); err != nil {
 		log.Error(err)
 		return raymond.SafeString("Unable to decode context")
@@ -89,7 +90,7 @@ func helperSet(propName string, propVal interface{}, options *raymond.Options) s
 		log.Error(err)
 		return "Unable to encode context"
 	}
-	newBag := util.ViewBag{}
+	newBag := structures.NewMap[string, interface{}]()
 	if err := json.Unmarshal(data, &newBag); err != nil {
 		log.Error(err)
 		return "Unable to decode context"
@@ -128,10 +129,10 @@ func resolvePartial(view string) *raymond.Partial {
 
 // normalizeViewPath ensures the path is within bounds and ends with .mojito
 func normalizeViewPath(view string) string {
-	path := mojito.ResourcesDir + mojito.TemplatePrefix + view + ".mojito"
-	if strings.HasPrefix(path, mojito.ResourcesDir+mojito.TemplatePrefix) {
+	path := mojito.ResourcesDir + TemplatePrefix + view + ".mojito"
+	if strings.HasPrefix(path, mojito.ResourcesDir+TemplatePrefix) {
 		return path
 	}
 	log.Warnf("Attempted path traversal to " + path)
-	return mojito.ResourcesDir + mojito.TemplatePrefix
+	return mojito.ResourcesDir + TemplatePrefix
 }
